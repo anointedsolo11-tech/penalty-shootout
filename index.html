@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penalty Shootout</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #1a472a; color: white; padding: 10px; margin:0; }
+        h1 { color: #FFD700; font-size: 24px; margin: 10px 0; }
+        .pitch { background: #2d8a4e; border: 3px solid white; border-radius: 10px; padding: 15px; max-width: 350px; margin: 0 auto; }
+        .goal { background: #87CEEB; height: 150px; border: 5px solid white; border-radius: 5px; position: relative; margin: 10px 0; overflow: hidden; }
+        .nets { position: absolute; top:0; left:0; right:0; bottom:0; background: repeating-linear-gradient(white 0px, white 2px, transparent 2px, transparent 25px); opacity: 0.2; }
+        .keeper { position: absolute; width: 40px; height: 80px; background: #FF5722; border-radius: 5px; top: 35px; transition: left 0.3s; }
+        .ball { position: absolute; width: 25px; height: 25px; background: white; border-radius: 50%; bottom: 20px; left: 40%; transition: all 0.5s; }
+        .ball::after { content: ''; position: absolute; width: 25px; height: 25px; background: black; border-radius: 50%; clip-path: polygon(50% 0, 65% 25%, 65% 75%, 50% 100%, 35% 75%, 35% 25%); }
+        .shoot-btn { padding: 15px 25px; margin: 5px; font-size: 16px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        .left { background: #2196F3; } .center { background: #4CAF50; } .right { background: #FF9800; }
+        .scoreboard { display: flex; justify-content: space-around; margin: 10px 0; font-size: 18px; }
+        .player-score, .cpu-score { background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 5px; }
+        .result { font-size: 20px; margin: 10px 0; min-height: 30px; }
+        .retry-btn { padding: 12px 30px; background: #FFD700; color: black; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display:none; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>⚽ Penalty Shootout</h1>
+    <div class="pitch">
+        <div class="scoreboard">
+            <div class="player-score">You: <span id="playerScore">0</span></div>
+            <div class="cpu-score">CPU: <span id="cpuScore">0</span></div>
+            <div>Round: <span id="round">1</span>/5</div>
+        </div>
+        <div class="goal">
+            <div class="nets"></div>
+            <div class="keeper" id="keeper"></div>
+            <div class="ball" id="ball"></div>
+        </div>
+        <div class="result" id="result"></div>
+        <div id="shootButtons">
+            <button class="shoot-btn left" onclick="shoot('left')">⬅ Left</button>
+            <button class="shoot-btn center" onclick="shoot('center')">⬆ Center</button>
+            <button class="shoot-btn right" onclick="shoot('right')">➡ Right</button>
+        </div>
+        <button class="retry-btn" id="retryBtn" onclick="resetGame()">🔄 Play Again</button>
+        <button class="retry-btn" id="adRetryBtn" style="background:#FF5722;display:none;">📺 Watch Ad for Extra Shot</button>
+    </div>
+
+    <script>
+        var playerScore = 0, cpuScore = 0, round = 1;
+        var totalRounds = 5;
+        var keeperPositions = ['left','center','right'];
+        var canShoot = true;
+
+        function resetKeeper() {
+            document.getElementById('keeper').style.left = '40%';
+            document.getElementById('ball').style.left = '40%';
+            document.getElementById('ball').style.bottom = '20px';
+            document.getElementById('result').innerHTML = '';
+            canShoot = true;
+            document.getElementById('shootButtons').style.display = 'block';
+        }
+
+        function shoot(choice) {
+            if (!canShoot) return;
+            canShoot = false;
+            document.getElementById('shootButtons').style.display = 'none';
+
+            var cpuChoice = keeperPositions[Math.floor(Math.random() * 3)];
+            var keeper = document.getElementById('keeper');
+            var ball = document.getElementById('ball');
+
+            // Move keeper
+            if (cpuChoice === 'left') keeper.style.left = '10%';
+            else if (cpuChoice === 'center') keeper.style.left = '40%';
+            else keeper.style.left = '70%';
+
+            // Move ball
+            if (choice === 'left') ball.style.left = '10%';
+            else if (choice === 'center') ball.style.left = '40%';
+            else ball.style.left = '70%';
+            ball.style.bottom = '60px';
+
+            var scored = (choice !== cpuChoice);
+            
+            setTimeout(function() {
+                if (scored) {
+                    playerScore++;
+                    document.getElementById('playerScore').innerHTML = playerScore;
+                    document.getElementById('result').innerHTML = '⚽ GOAL! You scored!';
+                    document.getElementById('result').style.color = '#4CAF50';
+                } else {
+                    cpuScore++;
+                    document.getElementById('cpuScore').innerHTML = cpuScore;
+                    document.getElementById('result').innerHTML = '🧤 Saved! Keeper got it!';
+                    document.getElementById('result').style.color = '#FF5252';
+                }
+                round++;
+                document.getElementById('round').innerHTML = round > totalRounds ? totalRounds : round;
+
+                if (round > totalRounds) {
+                    endGame();
+                } else {
+                    setTimeout(resetKeeper, 1500);
+                }
+            }, 600);
+        }
+
+        function endGame() {
+            document.getElementById('shootButtons').style.display = 'none';
+            document.getElementById('retryBtn').style.display = 'inline-block';
+            
+            if (playerScore > cpuScore) {
+                document.getElementById('result').innerHTML = '🏆 You Won! ' + playerScore + '-' + cpuScore;
+                document.getElementById('result').style.color = '#FFD700';
+            } else if (cpuScore > playerScore) {
+                document.getElementById('result').innerHTML = '😢 You Lost! ' + playerScore + '-' + cpuScore;
+                document.getElementById('result').style.color = '#FF5252';
+            } else {
+                document.getElementById('result').innerHTML = '🤝 Draw! ' + playerScore + '-' + cpuScore;
+                document.getElementById('result').style.color = '#FF9800';
+                document.getElementById('adRetryBtn').style.display = 'inline-block';
+            }
+        }
+
+        function resetGame() {
+            playerScore = 0; cpuScore = 0; round = 1;
+            document.getElementById('playerScore').innerHTML = '0';
+            document.getElementById('cpuScore').innerHTML = '0';
+            document.getElementById('round').innerHTML = '1';
+            document.getElementById('retryBtn').style.display = 'none';
+            document.getElementById('adRetryBtn').style.display = 'none';
+            document.getElementById('result').innerHTML = '';
+            resetKeeper();
+        }
+
+        document.getElementById('adRetryBtn').addEventListener('click', function() {
+            alert('📺 Ad would play here! Extra penalty shot awarded! ⚽');
+            totalRounds = 6;
+            round = 6;
+            playerScore++;
+            document.getElementById('playerScore').innerHTML = playerScore;
+            document.getElementById('result').innerHTML = '⚽ Extra shot GOAL! You Won! ' + playerScore + '-' + cpuScore;
+            document.getElementById('result').style.color = '#FFD700';
+            document.getElementById('retryBtn').style.display = 'inline-block';
+            document.getElementById('adRetryBtn').style.display = 'none';
+        });
+    </script>
+
+    <!-- PopCash Popunder -->
+    <script type="text/javascript">
+        var uid = '501707';
+        var wid = '753996';
+        var pop_tag = document.createElement('script');
+        pop_tag.src = '//cdn.popcash.net/show.js';
+        document.body.appendChild(pop_tag);
+        pop_tag.onerror = function() {
+            pop_tag = document.createElement('script');
+            pop_tag.src = '//cdn2.popcash.net/show.js';
+            document.body.appendChild(pop_tag)
+        };
+    </script>
+
+    <!-- RichAds Pops -->
+    <script src="https://richinfo.co/richpartners/pops/js/richads-pu-ob.js" data-pubid="1010270" data-siteid="395753" async data-cfasync="false"></script>
+
+    <!-- Adsterra Social Bar -->
+    <script src="https://bowlsharp.com/c2/6e/5a/c26e5a175a3b17d8bf301c3d1db44b82.js"></script>
+
+    <!-- Adsterra Popunder -->
+    <script src="https://bowlsharp.com/0a/25/31/0a2531c6cafa70a054f9b2e3e2c3d41d.js"></script>
+</body>
+</html>
