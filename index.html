@@ -2,61 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Penalty Shootout</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #1a472a; color: white; padding: 10px; margin:0; }
-        h1 { color: #FFD700; font-size: 24px; margin: 10px 0; }
-        .pitch { background: #2d8a4e; border: 3px solid white; border-radius: 10px; padding: 15px; max-width: 350px; margin: 0 auto; }
-        .goal { background: #87CEEB; height: 150px; border: 5px solid white; border-radius: 5px; position: relative; margin: 10px 0; overflow: hidden; }
-        .nets { position: absolute; top:0; left:0; right:0; bottom:0; background: repeating-linear-gradient(white 0px, white 2px, transparent 2px, transparent 25px); opacity: 0.2; }
-        .keeper { position: absolute; width: 40px; height: 80px; background: #FF5722; border-radius: 5px; top: 35px; transition: left 0.3s; }
-        .ball { position: absolute; width: 25px; height: 25px; background: white; border-radius: 50%; bottom: 20px; left: 40%; transition: all 0.5s; }
-        .ball::after { content: ''; position: absolute; width: 25px; height: 25px; background: black; border-radius: 50%; clip-path: polygon(50% 0, 65% 25%, 65% 75%, 50% 100%, 35% 75%, 35% 25%); }
-        .shoot-btn { padding: 15px 25px; margin: 5px; font-size: 16px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: sans-serif; text-align: center; background: #1a472a; color: white; height: 100vh; overflow: hidden; }
+        h1 { color: #FFD700; font-size: 20px; padding: 8px 0; }
+        .pitch { background: #2d8a4e; border: 2px solid white; border-radius: 8px; max-width: 360px; margin: 0 auto; padding: 10px; }
+        .scoreboard { display: flex; justify-content: space-around; margin: 5px 0; font-size: 14px; }
+        .goal { background: #87CEEB; height: 150px; border: 3px solid white; border-radius: 5px; position: relative; margin: 8px 0; overflow: hidden; }
+        .nets { position: absolute; top:0; left:0; right:0; bottom:0; background: repeating-linear-gradient(white 0px, white 1px, transparent 1px, transparent 15px); opacity: 0.15; }
+        .keeper { position: absolute; font-size: 60px; top: 40px; left: 35%; transition: left 0.2s; z-index: 2; }
+        .ball { position: absolute; font-size: 30px; bottom: 15px; left: 42%; transition: all 0.4s; z-index: 1; }
+        .shoot-btns { display: flex; justify-content: space-around; gap: 5px; }
+        .shoot-btn { flex: 1; padding: 14px 5px; font-size: 14px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
         .left { background: #2196F3; } .center { background: #4CAF50; } .right { background: #FF9800; }
-        .scoreboard { display: flex; justify-content: space-around; margin: 10px 0; font-size: 18px; }
-        .player-score, .cpu-score { background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 5px; }
-        .result { font-size: 20px; margin: 10px 0; min-height: 30px; }
-        .retry-btn { padding: 12px 30px; background: #FFD700; color: black; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; display:none; margin: 10px; }
+        .result { font-size: 16px; margin: 8px 0; min-height: 24px; font-weight: bold; }
+        .play-again { padding: 10px 25px; background: #FFD700; color: black; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; display:none; }
     </style>
 </head>
 <body>
     <h1>⚽ Penalty Shootout</h1>
     <div class="pitch">
         <div class="scoreboard">
-            <div class="player-score">You: <span id="playerScore">0</span></div>
-            <div class="cpu-score">CPU: <span id="cpuScore">0</span></div>
-            <div>Round: <span id="round">1</span>/5</div>
+            <span>🧑 You: <b id="playerScore">0</b></span>
+            <span>🧤 Keeper: <b id="cpuScore">0</b></span>
+            <span>Round: <b id="round">1</b>/5</span>
         </div>
         <div class="goal">
             <div class="nets"></div>
-            <div class="keeper" id="keeper"></div>
-            <div class="ball" id="ball"></div>
+            <div class="keeper" id="keeper">🧤</div>
+            <div class="ball" id="ball">⚽</div>
         </div>
         <div class="result" id="result"></div>
-        <div id="shootButtons">
+        <div class="shoot-btns" id="shootButtons">
             <button class="shoot-btn left" onclick="shoot('left')">⬅ Left</button>
             <button class="shoot-btn center" onclick="shoot('center')">⬆ Center</button>
-            <button class="shoot-btn right" onclick="shoot('right')">➡ Right</button>
+            <button class="shoot-btn right" onclick="shoot('right')">Right ➡</button>
         </div>
-        <button class="retry-btn" id="retryBtn" onclick="resetGame()">🔄 Play Again</button>
-        <button class="retry-btn" id="adRetryBtn" style="background:#FF5722;display:none;">📺 Watch Ad for Extra Shot</button>
+        <button class="play-again" id="retryBtn" onclick="resetGame()">🔄 Play Again</button>
     </div>
 
     <script>
-        var playerScore = 0, cpuScore = 0, round = 1;
-        var totalRounds = 5;
-        var keeperPositions = ['left','center','right'];
+        var playerScore = 0, cpuScore = 0, round = 1, totalRounds = 5;
         var canShoot = true;
 
         function resetKeeper() {
-            document.getElementById('keeper').style.left = '40%';
-            document.getElementById('ball').style.left = '40%';
-            document.getElementById('ball').style.bottom = '20px';
+            document.getElementById('keeper').style.left = '35%';
+            document.getElementById('ball').style.left = '42%';
+            document.getElementById('ball').style.bottom = '15px';
             document.getElementById('result').innerHTML = '';
             canShoot = true;
-            document.getElementById('shootButtons').style.display = 'block';
+            document.getElementById('shootButtons').style.display = 'flex';
         }
 
         function shoot(choice) {
@@ -64,19 +61,17 @@
             canShoot = false;
             document.getElementById('shootButtons').style.display = 'none';
 
-            var cpuChoice = keeperPositions[Math.floor(Math.random() * 3)];
+            var cpuChoice = ['left','center','right'][Math.floor(Math.random() * 3)];
             var keeper = document.getElementById('keeper');
             var ball = document.getElementById('ball');
 
-            // Move keeper
-            if (cpuChoice === 'left') keeper.style.left = '10%';
-            else if (cpuChoice === 'center') keeper.style.left = '40%';
-            else keeper.style.left = '70%';
+            if (cpuChoice === 'left') keeper.style.left = '5%';
+            else if (cpuChoice === 'center') keeper.style.left = '35%';
+            else keeper.style.left = '68%';
 
-            // Move ball
-            if (choice === 'left') ball.style.left = '10%';
-            else if (choice === 'center') ball.style.left = '40%';
-            else ball.style.left = '70%';
+            if (choice === 'left') ball.style.left = '5%';
+            else if (choice === 'center') ball.style.left = '42%';
+            else ball.style.left = '68%';
             ball.style.bottom = '60px';
 
             var scored = (choice !== cpuChoice);
@@ -84,30 +79,29 @@
             setTimeout(function() {
                 if (scored) {
                     playerScore++;
-                    document.getElementById('playerScore').innerHTML = playerScore;
-                    document.getElementById('result').innerHTML = '⚽ GOAL! You scored!';
+                    document.getElementById('result').innerHTML = '⚽ GOAL!';
                     document.getElementById('result').style.color = '#4CAF50';
                 } else {
                     cpuScore++;
-                    document.getElementById('cpuScore').innerHTML = cpuScore;
-                    document.getElementById('result').innerHTML = '🧤 Saved! Keeper got it!';
+                    document.getElementById('result').innerHTML = '🧤 SAVED!';
                     document.getElementById('result').style.color = '#FF5252';
                 }
+                document.getElementById('playerScore').innerHTML = playerScore;
+                document.getElementById('cpuScore').innerHTML = cpuScore;
                 round++;
                 document.getElementById('round').innerHTML = round > totalRounds ? totalRounds : round;
 
                 if (round > totalRounds) {
                     endGame();
                 } else {
-                    setTimeout(resetKeeper, 1500);
+                    setTimeout(resetKeeper, 1200);
                 }
-            }, 600);
+            }, 500);
         }
 
         function endGame() {
             document.getElementById('shootButtons').style.display = 'none';
             document.getElementById('retryBtn').style.display = 'inline-block';
-            
             if (playerScore > cpuScore) {
                 document.getElementById('result').innerHTML = '🏆 You Won! ' + playerScore + '-' + cpuScore;
                 document.getElementById('result').style.color = '#FFD700';
@@ -117,7 +111,6 @@
             } else {
                 document.getElementById('result').innerHTML = '🤝 Draw! ' + playerScore + '-' + cpuScore;
                 document.getElementById('result').style.color = '#FF9800';
-                document.getElementById('adRetryBtn').style.display = 'inline-block';
             }
         }
 
@@ -127,22 +120,8 @@
             document.getElementById('cpuScore').innerHTML = '0';
             document.getElementById('round').innerHTML = '1';
             document.getElementById('retryBtn').style.display = 'none';
-            document.getElementById('adRetryBtn').style.display = 'none';
-            document.getElementById('result').innerHTML = '';
             resetKeeper();
         }
-
-        document.getElementById('adRetryBtn').addEventListener('click', function() {
-            alert('📺 Ad would play here! Extra penalty shot awarded! ⚽');
-            totalRounds = 6;
-            round = 6;
-            playerScore++;
-            document.getElementById('playerScore').innerHTML = playerScore;
-            document.getElementById('result').innerHTML = '⚽ Extra shot GOAL! You Won! ' + playerScore + '-' + cpuScore;
-            document.getElementById('result').style.color = '#FFD700';
-            document.getElementById('retryBtn').style.display = 'inline-block';
-            document.getElementById('adRetryBtn').style.display = 'none';
-        });
     </script>
 
     <!-- PopCash Popunder -->
