@@ -7,21 +7,16 @@
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}body{font-family:sans-serif;text-align:center;background:#1a472a;color:white;height:100vh;overflow:hidden;}h1{color:#FFD700;font-size:20px;padding:8px 0;}.pitch{background:#2d8a4e;border:2px solid white;border-radius:8px;max-width:360px;margin:0 auto;padding:10px;}.scoreboard{display:flex;justify-content:space-around;margin:5px 0;font-size:14px;}.goal{background:#87CEEB;height:150px;border:3px solid white;border-radius:5px;position:relative;margin:8px 0;overflow:hidden;}.nets{position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(white 0px,white 1px,transparent 1px,transparent 15px);opacity:.15;}.keeper{position:absolute;font-size:60px;top:40px;left:35%;transition:left .2s;z-index:2;}.ball{position:absolute;font-size:30px;bottom:15px;left:42%;transition:all .4s;z-index:1;}.shoot-btns{display:flex;justify-content:space-around;gap:5px;}.shoot-btn{flex:1;padding:14px 5px;font-size:14px;border:none;border-radius:8px;color:white;font-weight:bold;cursor:pointer;}.left{background:#2196F3;}.center{background:#4CAF50;}.right{background:#FF9800;}.result{font-size:16px;margin:8px 0;min-height:24px;font-weight:bold;}.play-again{padding:10px 25px;background:#FFD700;color:black;border:none;border-radius:8px;font-size:15px;font-weight:bold;cursor:pointer;display:none;}
     </style>
-    <!-- RichAds Push Notifications (CPC) -->
-    <script type="module" src="https://richinfo.co/richpartners/push/js/rp-cl-ob.js?pubid=1010270&siteid=395750&niche=33" async data-cfasync="false"></script>
 </head>
 <body>
     <h1>⚽ Penalty Shootout</h1>
     <div class="pitch">
         <div class="scoreboard"><span>🧑 You: <b id="playerScore">0</b></span><span>🧤 Keeper: <b id="cpuScore">0</b></span><span>Round: <b id="round">1</b>/5</span></div>
         <div class="goal"><div class="nets"></div><div class="keeper" id="keeper">🧤</div><div class="ball" id="ball">⚽</div></div>
-        
-        <!-- Adsterra Banner (Visible) -->
         <div style="text-align:center;margin:5px 0;">
-            <script>atOptions={'key':'8b69adcadf5abaeca5e5d18a72f61c0e','format':'iframe','height':50,'width':320,'params':{}};</script>
+            <script>atOptions={'key':'8b69adcadf5abaeca5e5d18a72f61c0e','format':'iframe','height':250,'width':300,'params':{}};</script>
             <script src="https://bowlsharp.com/8b69adcadf5abaeca5e5d18a72f61c0e/invoke.js"></script>
         </div>
-        
         <div class="result" id="result"></div>
         <div class="shoot-btns" id="shootButtons">
             <button class="shoot-btn left" onclick="shoot('left')">⬅ Left</button>
@@ -37,8 +32,6 @@
         function endGame(){document.getElementById('shootButtons').style.display='none';document.getElementById('retryBtn').style.display='inline-block';if(playerScore>cpuScore){document.getElementById('result').innerHTML='🏆 You Won! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FFD700';}else if(cpuScore>playerScore){document.getElementById('result').innerHTML='😢 You Lost! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FF5252';}else{document.getElementById('result').innerHTML='🤝 Draw! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FF9800';}}
         function resetGame(){playerScore=0;cpuScore=0;round=1;document.getElementById('playerScore').innerHTML='0';document.getElementById('cpuScore').innerHTML='0';document.getElementById('round').innerHTML='1';document.getElementById('retryBtn').style.display='none';resetKeeper();}
     </script>
-
-    <!-- PopCash Popunder (CPM) -->
     <script type="text/javascript">
         var uid='501707';var wid='753996';var pop_tag=document.createElement('script');
         pop_tag.src='//cdn.popcash.net/show.js';document.body.appendChild(pop_tag);
