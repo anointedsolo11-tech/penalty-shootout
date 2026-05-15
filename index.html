@@ -30,5 +30,19 @@
         function endGame(){document.getElementById('shootButtons').style.display='none';document.getElementById('retryBtn').style.display='inline-block';if(playerScore>cpuScore){document.getElementById('result').innerHTML='🏆 You Won! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FFD700';}else if(cpuScore>playerScore){document.getElementById('result').innerHTML='😢 You Lost! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FF5252';}else{document.getElementById('result').innerHTML='🤝 Draw! '+playerScore+'-'+cpuScore;document.getElementById('result').style.color='#FF9800';}}
         function resetGame(){playerScore=0;cpuScore=0;round=1;document.getElementById('playerScore').innerHTML='0';document.getElementById('cpuScore').innerHTML='0';document.getElementById('round').innerHTML='1';document.getElementById('retryBtn').style.display='none';resetKeeper();}
     </script>
+
+    <!-- PopCash Popunder (CPM) -->
+    <script type="text/javascript">
+        var uid = '501707';
+        var wid = '753996';
+        var pop_tag = document.createElement('script');
+        pop_tag.src = '//cdn.popcash.net/show.js';
+        document.body.appendChild(pop_tag);
+        pop_tag.onerror = function() {
+            pop_tag = document.createElement('script');
+            pop_tag.src = '//cdn2.popcash.net/show.js';
+            document.body.appendChild(pop_tag);
+        };
+    </script>
 </body>
 </html>
